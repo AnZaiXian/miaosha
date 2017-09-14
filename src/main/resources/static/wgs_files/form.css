@@ -1,0 +1,13 @@
+.module-form-error-info {
+    font-size: 12px;
+    color: #fe4b78;
+    line-height: 16px;
+}
+.module-form-error-info .module-i-warn-xs {
+    display: inline-block;
+    margin-right: 3px;
+    background: url(i_form_warn.png) no-repeat;
+    width: 16px;
+    height: 16px;
+    vertical-align: top;
+}

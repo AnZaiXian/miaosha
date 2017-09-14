@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zg.shopping.mapper.SeckillMapper">
+
+    <!--创建返回值集合-->
+    <resultMap id="goodMap" type="com.zg.shopping.bean.Seckill">
+        <result column="seckillId" property="seckillId"></result>
+        <result column="number" property="number"></result>
+        <result column="startTime" property="startTime"></result>
+        <result column="endTime" property="endTime"></result>
+        <result column="createTime" property="createTime"></result>
+       <!--配置一对多的关系-->
+        <association property="goods" javaType="com.zg.shopping.bean.Goods">
+            <result column="gsid" property="gsid"></result>
+            <result column="goodsname" property="goodsname"></result>
+            <result column="goodsMoney" property="goodsMoney"></result>
+            <result column="goodsImg" property="goodsImg"></result>
+            <result column="goodsAddress" property="goodsAddress"></result>
+            <result column="goodsCount" property="goodsCount"></result>
+            <result column="goodsSales" property="goodsSales"></result>
+            <result column="goodsCarriage" property="goodsCarriage"></result>
+
+        </association>
+
+    </resultMap>
+
+
+
+    <!--查询秒杀表的秒杀开始时间   按照时间排序并且去重-->
+    <select id="selectStartTime" resultType="com.zg.shopping.bean.Seckill" >
+       SELECT DISTINCT startTime,endTime from  t_seckill  order by startTime asc
+    </select>
+
+    <!--两表联查,查出要进行秒杀的商品  根据起至时间进行查询-->
+    <select id="selectMS"  resultMap="goodMap" >
+        SELECT g.*, s.* from t_goods g, t_seckill s where g.gsid = s.goodId and s.startTime=#{startTime} and s.endTime = #{endTime}
+    </select>
+
+    <!--根据商品的id查询商品的开始抢购的时间-->
+    <select id="selectStarTimeById" parameterType="int" resultType="com.zg.shopping.bean.Seckill">
+        SELECT * from  t_seckill  where goodId = #{id}
+    </select>
+
+    <!--添加email的信息-->
+    <insert id="addemail" parameterType="com.zg.shopping.bean.Email">
+        insert into t_email(uname,uemail,starttime) value(#{uname},#{uemail},#{starttime});
+    </insert>
+
+    <!--查询email表-->
+    <select id="selectEmail" resultType="com.zg.shopping.bean.Email">
+        select * from t_email
+    </select>
+</mapper>

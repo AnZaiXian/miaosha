@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0031)http://x.hao61.net/frqctrl.html -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>zm_fqc</title>
+</head>
+<body>
+	测试页面for mac
+<!-- <div class="ad" id="iftest"> -->
+
+<script>
+	var isSafari = (new RegExp(/(iphone|ipod|mac os|ipad).*safari/)).test(navigator.userAgent.toLowerCase())
+	// console.log(isSafari,navigator.userAgent)
+	var ads = {
+            mobile:[
+            	//移动悬浮
+                'banner',
+				//移动插屏
+                'interstitial',
+                //移动度宝
+                'dubao', 
+                //移动智能场景
+                'smart',
+                //移动图加
+                'imageplus', 
+                //移动焦点横幅
+                'bannercp',
+                //移动焦点嵌入
+                'inlaycp',
+                //移动飞鸿
+                'feihong',
+                // 内容联盟 - 区块 - 左图右文
+                'neirong_qk_ztyw',
+                // 自定义度宝
+                'customdubao',
+                // 移动推送
+                'feihongpush',
+                // 搜索推荐
+                'searchrecommend',
+                // 推啊度宝
+                'tuiadubao',
+                // 移动浮标（为上面推啊度宝+自定义浮标）
+                'buoy'
+                ],
+            // pc端
+            pc:[
+            	//PC悬浮
+                'bannerpc',
+            	//PC图加
+                'imageplus',
+			   //PC插屏
+                'interstitialpc',
+            	//PC标签云
+                'cloudspc',
+                // PC嵌入
+                'qrpc',
+                //左对联
+                'leftcouplet',
+                //右对联
+                'rightcouplet'
+            ]
+        }
+	// 事件绑定函数
+	var addEvent = (function (){
+			if(document.addEventListener){	
+				return function(el,type,fn){
+					el.addEventListener(type,function(e){
+						fn.call(el,e)
+					},false)
+				}
+			}else if(document.attachEvent){
+				return function(el,type,fn){
+					el.attachEvent('on'+ type.toString(),function(e){
+						fn.call(el,e)
+					})
+				}
+			}
+		})()
+    var ctype = (new RegExp(/(iphone|ipod|android|ios|symbianos|ipad|mobile|windows phone)/i)).test(navigator.userAgent.toLowerCase()) == true?"mobile":"pc"
+
+	var cookStr = getCookie("cdjson"),
+		cookObj = cookStr == null?{}:eval(cookStr)
+	window.onload = function(argument){
+		// 检测CD
+		var incdArr =[]
+		if(isSafari){
+			for(var i = ads[ctype].length-1;i>=0;i--){
+				if(getStorage(ads[ctype][i]) !== null){
+					incdArr.push(ads[ctype][i])
+				}
+			}
+		}else{
+			for(var i = ads[ctype].length-1;i>=0;i--){
+				if(getCookie(ads[ctype][i]) !== null){
+					incdArr.push(ads[ctype][i])
+				}
+			}
+		}
+		window.parent.postMessage(incdArr.join('&'),"*")
+		//设置cookie
+		addEvent(window,'message',function(e){
+			if(e.source != window.parent) return
+			var name = (e.data.split(":"))[0],
+				cd = (e.data.split("&"))[1]
+
+			var t = new Date().getTime() + cd*1000
+			// safari默认禁止iframe设置第三方cookie
+			if(isSafari && window.localStorage){
+				setStorage(name,t)
+			}else{
+				setCookie(name,true,t)
+			}
+		})
+	}
+
+
+	function setCookie(key,value,exp){
+		document.cookie = key + "="+ escape (value) + ";expires=" + (new Date(exp)).toGMTString() + ';path=/';
+	}
+	function getCookie(key){
+		var arr,reg = new RegExp("(^| )"+key+"=([^;]*)(;|$)");
+		if(arr = document.cookie.match(reg)){
+			return unescape(arr[2])
+		}
+    	else {
+    		return null
+    	}
+	}
+	function setStorage(key,exp){
+		window.localStorage.setItem(key,exp)
+	}
+	function getStorage(key){
+		var res = window.localStorage.getItem(key)
+		if(res){
+			if(res < new Date().getTime()){
+				window.localStorage.removeItem(key)
+				return null
+			}else{
+				return window.localStorage[key]
+			}
+		}else{
+			return null
+		}
+	}
+</script>
+
+</body></html>
